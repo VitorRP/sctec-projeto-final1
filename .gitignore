@@ -2,3 +2,5 @@ node_modules/
 dist
 .env
 build/
+.git_old/
+.git_backup/
