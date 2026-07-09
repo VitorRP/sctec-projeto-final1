@@ -1,0 +1,103 @@
+-- ============================================================
+--  Biblioteca - Schema PostgreSQL
+--  Convertido a partir do DBML
+-- ============================================================
+
+-- ENUM para status do aluguel
+CREATE TYPE status_aluguel AS ENUM ('ativo', 'devolvido');
+
+
+-- ------------------------------------------------------------
+-- autor
+-- ------------------------------------------------------------
+CREATE TABLE autor (
+    id          INTEGER      GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nome        VARCHAR      NOT NULL,
+    sobrenome   VARCHAR,
+    cpf         CHAR(11)     UNIQUE,
+    data_nascimento DATE     NOT NULL
+);
+
+
+-- ------------------------------------------------------------
+-- editora
+-- ------------------------------------------------------------
+CREATE TABLE editora (
+    id             INTEGER      GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    cnpj           CHAR(14) UNIQUE,
+    razao_social   VARCHAR  NOT NULL,
+    nome_fantasia  VARCHAR
+);
+
+
+-- ------------------------------------------------------------
+-- livro
+-- Nota: autor_id mantido do DBML original (autor principal).
+-- A tabela autor_livro cobre o relacionamento N:N completo.
+-- ------------------------------------------------------------
+CREATE TABLE livro (
+    id             INTEGER      GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    autor_id       INTEGER NOT NULL REFERENCES autor(id),
+    titulo         VARCHAR NOT NULL,
+    ano_publicacao DATE,
+    codigo_isbn    VARCHAR UNIQUE
+);
+
+
+-- ------------------------------------------------------------
+-- livro_editora  (N:N livro <-> editora)
+-- ------------------------------------------------------------
+CREATE TABLE livro_editora (
+    id_livro   INTEGER NOT NULL REFERENCES livro(id)   ON DELETE CASCADE,
+    id_editora INTEGER NOT NULL REFERENCES editora(id) ON DELETE CASCADE,
+    PRIMARY KEY (id_livro, id_editora)
+);
+
+
+-- ------------------------------------------------------------
+-- genero_livro
+-- Mantém gênero como VARCHAR (valor direto, sem tabela separada).
+-- PRIMARY KEY composta impede duplicatas do mesmo gênero no livro.
+-- ------------------------------------------------------------
+-- Gênero poderia ser uma tabela própria de todas os possíveis gêneros de um livro. E aqui mais uma many to many (N:N livro <-> gênero)
+CREATE TABLE genero_livro (
+    id       INTEGER      GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_livro INTEGER NOT NULL REFERENCES livro(id) ON DELETE CASCADE,
+    genero   VARCHAR NOT NULL,
+);
+
+
+-- ------------------------------------------------------------
+-- autor_livro  (N:N autor <-> livro — coautores)
+-- ------------------------------------------------------------
+CREATE TABLE autor_livro (
+    id_autor INTEGER NOT NULL REFERENCES autor(id)  ON DELETE CASCADE,
+    id_livro INTEGER NOT NULL REFERENCES livro(id)  ON DELETE CASCADE,
+    PRIMARY KEY (id_autor, id_livro)
+);
+
+
+-- ------------------------------------------------------------
+-- usuario
+-- ------------------------------------------------------------
+CREATE TABLE usuario (
+    id        INTEGER      GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    cpf       CHAR(11)    UNIQUE,
+    nome      VARCHAR     NOT NULL,
+    sobrenome VARCHAR,
+    login     VARCHAR     NOT NULL UNIQUE,
+    password  VARCHAR     NOT NULL
+);
+
+
+-- ------------------------------------------------------------
+-- aluguel_usuario
+-- ------------------------------------------------------------
+CREATE TABLE aluguel_usuario (
+    id               INTEGER      GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_usuario       INTEGER          NOT NULL REFERENCES usuario(id),
+    id_livro         INTEGER          NOT NULL REFERENCES livro(id),
+    data_emprestimo  TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    status           status_aluguel   NOT NULL DEFAULT 'ativo',
+    data_devolucao   TIMESTAMP        NULL,
+);
