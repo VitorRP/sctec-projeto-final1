@@ -1,9 +1,11 @@
 import { Pool } from 'pg'
 
-import { Usuario } from '../model/user'
+import { Usuario } from '../../model/user'
 
 export class UserRepository {
   constructor(private readonly pool: Pool) {}
+
+  //TODO: Implementar verificação de login e senha para autenticação de usuário
 
   async findByLogin(login: string): Promise<Usuario | null> {
     const { rows } = await this.pool.query<Usuario>(
@@ -22,8 +24,8 @@ export class UserRepository {
     const {
       rows: [row]
     } = await this.pool.query<Usuario>(
-      'INSERT INTO usuario (nome, email, login, senha, cpf) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [user.nome, user.email, user.login, user.senha, user.cpf]
+      'INSERT INTO usuario (nome, email, login, password, cpf) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [user.nome, user.email, user.login, user.password, user.cpf]
     )
 
     return row

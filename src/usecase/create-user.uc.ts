@@ -1,5 +1,5 @@
+import { UserRepository } from '../infra/repositories/user.repository'
 import { Usuario } from '../model/user'
-import { UserRepository } from '../repositories/user.repository'
 import { CreateUserDto } from '../view/dto/create-user-form.dto'
 
 export class CreateUserUseCase {

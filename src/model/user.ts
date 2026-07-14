@@ -3,11 +3,13 @@ export interface Usuario {
 
   nome: string
 
+  sobrenome: string
+
   cpf: string
 
   email: string
 
   login: string
 
-  senha: string
+  password: string
 }

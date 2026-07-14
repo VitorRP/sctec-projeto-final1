@@ -1,6 +1,6 @@
 import 'dotenv/config'
 import { initDatabase, pool } from './@common/database/database'
-import { UserRepository } from './repositories/user.repository'
+import { UserRepository } from './infra/repositories/user.repository'
 import { CreateUserUseCase } from './usecase/create-user.uc'
 import { MainView } from './view/main.view'
 

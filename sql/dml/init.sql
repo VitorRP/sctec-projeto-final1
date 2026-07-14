@@ -14,7 +14,6 @@ CREATE TABLE autor (
     id          INTEGER      GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     nome        VARCHAR      NOT NULL,
     sobrenome   VARCHAR,
-    cpf         CHAR(11)     UNIQUE,
     data_nascimento DATE     NOT NULL
 );
 
@@ -40,7 +39,9 @@ CREATE TABLE livro (
     autor_id       INTEGER NOT NULL REFERENCES autor(id),
     titulo         VARCHAR NOT NULL,
     ano_publicacao DATE,
-    codigo_isbn    VARCHAR UNIQUE
+    codigo_isbn    VARCHAR UNIQUE,
+    quantidade_total INTEGER NOT NULL DEFAULT 0,
+    quantidade_emprestimos INTEGER NOT NULL DEFAULT 0
 );
 
 
@@ -52,20 +53,6 @@ CREATE TABLE livro_editora (
     id_editora INTEGER NOT NULL REFERENCES editora(id) ON DELETE CASCADE,
     PRIMARY KEY (id_livro, id_editora)
 );
-
-
--- ------------------------------------------------------------
--- genero_livro
--- Mantém gênero como VARCHAR (valor direto, sem tabela separada).
--- PRIMARY KEY composta impede duplicatas do mesmo gênero no livro.
--- ------------------------------------------------------------
--- Gênero poderia ser uma tabela própria de todas os possíveis gêneros de um livro. E aqui mais uma many to many (N:N livro <-> gênero)
-CREATE TABLE genero_livro (
-    id       INTEGER      GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    id_livro INTEGER NOT NULL REFERENCES livro(id) ON DELETE CASCADE,
-    genero   VARCHAR NOT NULL,
-);
-
 
 -- ------------------------------------------------------------
 -- autor_livro  (N:N autor <-> livro — coautores)
@@ -99,5 +86,5 @@ CREATE TABLE aluguel_usuario (
     id_livro         INTEGER          NOT NULL REFERENCES livro(id),
     data_emprestimo  TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
     status           status_aluguel   NOT NULL DEFAULT 'ativo',
-    data_devolucao   TIMESTAMP        NULL,
+    data_devolucao   TIMESTAMP        NULL
 );
