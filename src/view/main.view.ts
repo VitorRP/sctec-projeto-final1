@@ -1,9 +1,15 @@
+import { CheckUserDto } from './dto/check-user-form'
 import { CreateUserDto } from './dto/create-user-form.dto'
+import { MenuView } from './menu.view'
 import { ConsoleView } from '../@common/view/console.view'
+import { CheckUserUseCase } from '../usecase/check-user.uc'
 import { CreateUserUseCase } from '../usecase/create-user.uc'
 
 export class MainView extends ConsoleView {
-  constructor(private readonly createUserUc: CreateUserUseCase) {
+  constructor(
+    private readonly checkUserUc: CheckUserUseCase,
+    private readonly createUserUc: CreateUserUseCase
+  ) {
     super(true)
   }
 
@@ -14,26 +20,57 @@ export class MainView extends ConsoleView {
     this.display('========================================')
     this.display('')
 
-    const createUserDto = await this.promptInteractiveForm(
-      `Informe os dados do usuário`,
-      CreateUserDto.schema(),
-      CreateUserDto
+    const checkUserDto = await this.promptInteractiveForm(
+      `Informe os dados de login`,
+      CheckUserDto.schema(),
+      CheckUserDto
     )
 
-    const userOrError = await this.createUserUc
-      .execute(createUserDto)
+    const userLoginOrError = await this.checkUserUc
+      .execute(checkUserDto)
       .catch((error: unknown) => error as Error)
 
-    if (userOrError instanceof Error) {
-      this.reportTechnicalError(userOrError)
+    if (userLoginOrError instanceof Error || userLoginOrError === null) {
+      this.display('Usuário não encontrado ou senha incorreta.')
+      const option = await this.prompt(
+        '1 - Tentar novamente\n2 - Criar novo usuário\nEscolha uma opção: '
+      )
+      if (option === '1') {
+        return
+      }
+
+      if (option === '2') {
+        const createUserDto = await this.promptInteractiveForm(
+          `Informe os dados do usuário`,
+          CreateUserDto.schema(),
+          CreateUserDto
+        )
+        const userOrError = await this.createUserUc
+          .execute(createUserDto)
+          .catch((error: unknown) => error as Error)
+
+        if (userOrError instanceof Error) {
+          this.reportTechnicalError(userOrError)
+          await this.prompt('Pressione ENTER para sair...')
+          return
+        }
+
+        await this.prompt(
+          `Usuario ${JSON.stringify(userOrError)} criado com sucesso!`
+        )
+        await this.prompt('Pressione ENTER para sair...')
+        this.exit()
+
+        return
+      }
+
+      console.log('Opção inválida. Tente novamente.')
       await this.prompt('Pressione ENTER para sair...')
+
       return
     }
 
-    await this.prompt(
-      `Usuario ${JSON.stringify(userOrError)} criado com sucesso!`
-    )
-    await this.prompt('Pressione ENTER para sair...')
-    this.exit()
+    const menuView = new MenuView(userLoginOrError)
+    await menuView.start()
   }
 }
