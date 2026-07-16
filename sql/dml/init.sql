@@ -14,7 +14,7 @@ CREATE TABLE autor (
     id          INTEGER      GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     nome        VARCHAR      NOT NULL,
     sobrenome   VARCHAR,
-    data_nascimento DATE     NOT NULL
+    cpf         CHAR(11)     NOT NULL UNIQUE
 );
 
 
@@ -36,7 +36,6 @@ CREATE TABLE editora (
 -- ------------------------------------------------------------
 CREATE TABLE livro (
     id             INTEGER      GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    autor_id       INTEGER NOT NULL REFERENCES autor(id),
     titulo         VARCHAR NOT NULL,
     ano_publicacao DATE,
     codigo_isbn    VARCHAR UNIQUE,

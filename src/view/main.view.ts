@@ -56,10 +56,8 @@ export class MainView extends ConsoleView {
         }
 
         await this.prompt(
-          `Usuario ${JSON.stringify(userOrError)} criado com sucesso!`
+          `Usuario ${JSON.stringify(userOrError)} criado com sucesso!\nPressione ENTER para fazer login...`
         )
-        await this.prompt('Pressione ENTER para sair...')
-        this.exit()
 
         return
       }
