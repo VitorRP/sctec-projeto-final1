@@ -1,5 +1,5 @@
-import { ConsoleView } from '../@common/view/console.view'
-import { Usuario } from '../model/user'
+import { ConsoleView } from '../../@common/view/console.view'
+import { Usuario } from '../../model/user'
 
 export class MenuView extends ConsoleView {
   constructor(private readonly user: Usuario) {
@@ -8,7 +8,9 @@ export class MenuView extends ConsoleView {
 
   protected async update(): Promise<void> {
     this.display('========================================')
-    this.display(`   Bem-vindo, ${this.user.login}              `)
+    this.display(
+      `   Bem-vindo, ${this.user.nome} ${this.user.sobrenome}              `
+    )
     this.display('   Sistema de Gestão de Biblioteca      ')
     this.display('========================================')
     this.display('')
@@ -20,7 +22,7 @@ export class MenuView extends ConsoleView {
     this.display('6 - Relatórios')
     this.display('7 - Sair')
 
-    const option = await this.prompt('Escolha uma opção: ')
+    const option = await this.prompt('\nEscolha uma opção: ')
 
     switch (option) {
       case '1':

@@ -1,0 +1,3 @@
+Ter separado a dto por funcionalidade para facilitar refatoracao e escalabilidade
+
+Permiti fazer busca por nome ou CPF sem precisar explicitar

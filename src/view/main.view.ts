@@ -1,6 +1,6 @@
 import { CheckUserDto } from './dto/check-user-form'
 import { CreateUserDto } from './dto/create-user-form.dto'
-import { MenuView } from './menu.view'
+import { MenuView } from './screens/menu.view'
 import { ConsoleView } from '../@common/view/console.view'
 import { CheckUserUseCase } from '../usecase/check-user.uc'
 import { CreateUserUseCase } from '../usecase/create-user.uc'

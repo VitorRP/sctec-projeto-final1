@@ -24,8 +24,15 @@ export class UserRepository {
     const {
       rows: [row]
     } = await this.pool.query<Usuario>(
-      'INSERT INTO usuario (nome, email, login, password, cpf) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [user.nome, user.email, user.login, user.password, user.cpf]
+      'INSERT INTO usuario (nome, sobrenome, email, login, password, cpf) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [
+        user.nome,
+        user.sobrenome,
+        user.email,
+        user.login,
+        user.password,
+        user.cpf
+      ]
     )
 
     return row

@@ -71,6 +71,7 @@ CREATE TABLE usuario (
     cpf       CHAR(11)    UNIQUE,
     nome      VARCHAR     NOT NULL,
     sobrenome VARCHAR,
+    email VARCHAR    NOT NULL UNIQUE,
     login     VARCHAR     NOT NULL UNIQUE,
     password  VARCHAR     NOT NULL
 );
