@@ -3,8 +3,8 @@
 --  Convertido a partir do DBML
 -- ============================================================
 
--- ENUM para status do aluguel
-CREATE TYPE status_aluguel AS ENUM ('ativo', 'devolvido');
+-- ENUM para status do emprestimo
+CREATE TYPE status_emprestimo AS ENUM ('ativo', 'devolvido');
 
 
 -- ------------------------------------------------------------
@@ -78,13 +78,13 @@ CREATE TABLE usuario (
 
 
 -- ------------------------------------------------------------
--- aluguel_usuario
+-- emprestimo_usuario
 -- ------------------------------------------------------------
-CREATE TABLE aluguel_usuario (
+CREATE TABLE emprestimo_usuario (
     id               INTEGER      GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     id_usuario       INTEGER          NOT NULL REFERENCES usuario(id),
     id_livro         INTEGER          NOT NULL REFERENCES livro(id),
     data_emprestimo  TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    status           status_aluguel   NOT NULL DEFAULT 'ativo',
+    status           status_emprestimo   NOT NULL DEFAULT 'ativo',
     data_devolucao   TIMESTAMP        NULL
 );

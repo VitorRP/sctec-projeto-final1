@@ -30,7 +30,10 @@ export class AutorRepository {
 
   async findAutor(entry: string): Promise<Autor[] | null> {
     const { rows } = await this.pool.query<Autor>(
-      'SELECT * FROM autor WHERE nome ILIKE $1 OR sobrenome ILIKE $1 OR cpf ILIKE $1 OR id::text ILIKE $1',
+      `SELECT * FROM autor 
+      WHERE CONCAT_WS(' ', nome, sobrenome) ILIKE $1 
+      OR cpf ILIKE $1 
+      OR id::text ILIKE $1`,
       [`%${entry}%`]
     )
     return rows
@@ -40,7 +43,9 @@ export class AutorRepository {
     const {
       rows: [row]
     } = await this.pool.query<Autor>(
-      'INSERT INTO autor (nome, sobrenome, cpf) VALUES ($1, $2, $3) RETURNING *',
+      `INSERT INTO autor (nome, sobrenome, cpf) 
+      VALUES ($1, $2, $3) 
+      RETURNING *`,
       [autor.nome, autor.sobrenome, autor.cpf]
     )
 

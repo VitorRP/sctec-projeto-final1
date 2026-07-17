@@ -9,7 +9,9 @@ export class UserRepository {
 
   async findByLogin(login: string, password: string): Promise<Usuario | null> {
     const { rows } = await this.pool.query<Usuario>(
-      'SELECT * FROM usuario WHERE login = $1 AND password = $2',
+      `SELECT * FROM usuario 
+      WHERE login = $1 
+      AND password = $2`,
       [login, password]
     )
 
@@ -24,7 +26,9 @@ export class UserRepository {
     const {
       rows: [row]
     } = await this.pool.query<Usuario>(
-      'INSERT INTO usuario (nome, sobrenome, email, login, password, cpf) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      `INSERT INTO usuario (nome, sobrenome, email, login, password, cpf) 
+      VALUES ($1, $2, $3, $4, $5, $6) 
+      RETURNING *`,
       [
         user.nome,
         user.sobrenome,

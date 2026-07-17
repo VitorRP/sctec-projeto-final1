@@ -93,7 +93,7 @@ export class AutorView extends ConsoleView {
         this.display(`Busca de Autores:`)
         this.display('========================================')
         const entry = await this.prompt(
-          '\nDigite o nome, sobrenome, CPF ou ID do autor que deseja buscar: '
+          '\nDigite o ID, CPF ou nome e/ou sobrenome do autor que deseja buscar: '
         )
         this.display('\n========================================')
 
