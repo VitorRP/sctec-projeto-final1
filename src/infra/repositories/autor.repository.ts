@@ -5,6 +5,16 @@ import { Autor } from '../../model/autor'
 export class AutorRepository {
   constructor(private readonly pool: Pool) {}
 
+  async findAllAutors(): Promise<Autor[] | null> {
+    const { rows } = await this.pool.query<Autor>('SELECT * FROM autor')
+
+    if (rows.length === 0) {
+      return null
+    }
+
+    return rows
+  }
+
   async findAutorByCpf(cpf: string): Promise<Autor | null> {
     const { rows } = await this.pool.query<Autor>(
       'SELECT * FROM autor WHERE cpf = $1',

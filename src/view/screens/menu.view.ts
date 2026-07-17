@@ -1,9 +1,13 @@
+import { AutorView } from './autor.view'
 import { ConsoleView } from '../../@common/view/console.view'
 import { Usuario } from '../../model/user'
 
 export class MenuView extends ConsoleView {
-  constructor(private readonly user: Usuario) {
-    super(true)
+  constructor(
+    private readonly user: Usuario,
+    private readonly autorView: AutorView
+  ) {
+    super()
   }
 
   protected async update(): Promise<void> {
@@ -26,7 +30,7 @@ export class MenuView extends ConsoleView {
 
     switch (option) {
       case '1':
-        this.display('Opção Autores selecionada.')
+        await this.autorView.start()
         break
       case '2':
         this.display('Opção Livros selecionada.')

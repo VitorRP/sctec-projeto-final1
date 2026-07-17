@@ -1,5 +1,6 @@
 import { CheckUserDto } from './dto/check-user-form'
 import { CreateUserDto } from './dto/create-user-form.dto'
+import { AutorView } from './screens/autor.view'
 import { MenuView } from './screens/menu.view'
 import { ConsoleView } from '../@common/view/console.view'
 import { CheckUserUseCase } from '../usecase/check-user.uc'
@@ -8,7 +9,8 @@ import { CreateUserUseCase } from '../usecase/create-user.uc'
 export class MainView extends ConsoleView {
   constructor(
     private readonly checkUserUc: CheckUserUseCase,
-    private readonly createUserUc: CreateUserUseCase
+    private readonly createUserUc: CreateUserUseCase,
+    private readonly autorView: AutorView
   ) {
     super(true)
   }
@@ -33,7 +35,7 @@ export class MainView extends ConsoleView {
     if (userLoginOrError instanceof Error || userLoginOrError === null) {
       this.display('Usuário não encontrado ou senha incorreta.')
       const option = await this.prompt(
-        '1 - Tentar novamente\n2 - Criar novo usuário\nEscolha uma opção: '
+        '1 - Tentar novamente\n2 - Criar novo usuário\n3 - Sair\nEscolha uma opção: '
       )
       if (option === '1') {
         return
@@ -56,9 +58,15 @@ export class MainView extends ConsoleView {
         }
 
         await this.prompt(
-          `Usuario ${JSON.stringify(userOrError)} criado com sucesso!\nPressione ENTER para fazer login...`
+          `Usuario ${JSON.stringify(userOrError)} criado com sucesso!\nPressione ENTER para fazer login...\n`
         )
 
+        return
+      }
+
+      if (option === '3') {
+        this.display('Pressione ENTER para sair do sistema...')
+        this.exit()
         return
       }
 
@@ -68,7 +76,8 @@ export class MainView extends ConsoleView {
       return
     }
 
-    const menuView = new MenuView(userLoginOrError)
+    const menuView = new MenuView(userLoginOrError, this.autorView)
     await menuView.start()
+    this.exit()
   }
 }

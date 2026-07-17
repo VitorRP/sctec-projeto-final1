@@ -1,15 +1,19 @@
 import { ConsoleView } from '../../@common/view/console.view'
-import { Autor } from '../../model/autor'
-import { Usuario } from '../../model/user'
+import { CreateAutorUseCase } from '../../usecase/create-autor.uc'
+import { ListAllAutorsUseCase } from '../../usecase/list-autor.uc'
+import { CreateAutorDto } from '../dto/create-autor-form.dto'
 
 export class AutorView extends ConsoleView {
-  constructor(private readonly user: Usuario) {
+  constructor(
+    private readonly listAllAutorsUc: ListAllAutorsUseCase,
+    private readonly createAutorUc: CreateAutorUseCase
+  ) {
     super(true)
   }
 
   protected async update(): Promise<void> {
     this.display('========================================')
-    this.display(`Você está no menu de Autores,${this.user.nome}!`)
+    this.display(`Você está no menu de Autores!`)
     this.display('========================================')
     this.display('')
     this.display('1 - Cadastrar Autor')
@@ -20,14 +24,64 @@ export class AutorView extends ConsoleView {
     const option = await this.prompt('\nEscolha uma opção: ')
 
     switch (option) {
-      case '1':
-        this.display('Opção Cadastrar Autor selecionada.')
+      case '1': {
+        const createAutorDto = await this.promptInteractiveForm(
+          `Informe os dados do autor`,
+          CreateAutorDto.schema(),
+          CreateAutorDto
+        )
+
+        const autorOrError = await this.createAutorUc
+          .execute(createAutorDto)
+          .catch((error: unknown) => error as Error)
+
+        if (autorOrError instanceof Error) {
+          this.reportTechnicalError(autorOrError)
+          await this.prompt('Pressione ENTER para sair...')
+          return
+        }
+
+        this.display('Autor cadastrado com sucesso!')
+        await this.prompt('Pressione ENTER para continuar...')
         break
-      case '2':
-        this.display('Opção Listar Autores selecionada.')
+      }
+      case '2': {
+        this.clear()
+
+        this.display('========================================')
+        this.display(`Listagem de Autores:`)
+        this.display('========================================')
+
+        const listAutorsOrError = await this.listAllAutorsUc
+          .execute()
+          .catch((error: unknown) => error as Error)
+
+        if (listAutorsOrError instanceof Error) {
+          this.display('Erro ao listar autores: ' + listAutorsOrError.message)
+          await this.prompt('Pressione ENTER para continuar...')
+
+          return
+        }
+
+        if (listAutorsOrError === null || listAutorsOrError.length === 0) {
+          this.display('Nenhum autor encontrado.')
+          await this.prompt('Pressione ENTER para continuar...')
+          return
+        }
+
+        listAutorsOrError.map((autor) => {
+          this.display(
+            `ID: ${autor.id.toString()}\nNome Completo: ${autor.nome} ${autor.sobrenome}\nCPF: ${autor.cpf}\n========================================`
+          )
+        })
+
+        await this.prompt('Pressione ENTER para continuar...')
+
         break
+      }
       case '3':
         this.display('Opção Buscar Autor selecionada.')
+        await this.prompt('Pressione ENTER para continuar...')
         break
       case '4':
         this.display('Voltando ao Menu Principal...')
@@ -35,6 +89,7 @@ export class AutorView extends ConsoleView {
         break
       default:
         this.display('Opção inválida. Tente novamente.')
+        await this.prompt('Pressione ENTER para continuar...')
     }
   }
 }
