@@ -8,3 +8,11 @@ export class ListAllAutorsUseCase {
     return await this.repository.findAllAutors()
   }
 }
+
+export class ListAutorUseCase {
+  constructor(private readonly repository: AutorRepository) {}
+
+  async execute(entry: string): Promise<Autor[] | null> {
+    return await this.repository.findAutor(entry)
+  }
+}

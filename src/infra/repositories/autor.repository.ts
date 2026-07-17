@@ -28,17 +28,12 @@ export class AutorRepository {
     return rows[0]
   }
 
-  async findByNome(nome: string): Promise<Autor | null> {
+  async findAutor(entry: string): Promise<Autor[] | null> {
     const { rows } = await this.pool.query<Autor>(
-      'SELECT * FROM autor WHERE nome = $1',
-      [nome]
+      'SELECT * FROM autor WHERE nome ILIKE $1 OR sobrenome ILIKE $1 OR cpf ILIKE $1 OR id::text ILIKE $1',
+      [`%${entry}%`]
     )
-
-    if (rows.length === 0) {
-      return null
-    }
-
-    return rows[0]
+    return rows
   }
 
   async create(autor: Omit<Autor, 'id'>): Promise<Autor> {

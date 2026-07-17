@@ -1,14 +1,18 @@
 import { ConsoleView } from '../../@common/view/console.view'
-import { CreateAutorUseCase } from '../../usecase/create-autor.uc'
-import { ListAllAutorsUseCase } from '../../usecase/list-autor.uc'
+import { CreateAutorUseCase } from '../../service/create-autor.uc'
+import {
+  ListAllAutorsUseCase,
+  ListAutorUseCase
+} from '../../service/list-autor.service'
 import { CreateAutorDto } from '../dto/create-autor-form.dto'
 
 export class AutorView extends ConsoleView {
   constructor(
     private readonly listAllAutorsUc: ListAllAutorsUseCase,
-    private readonly createAutorUc: CreateAutorUseCase
+    private readonly createAutorUc: CreateAutorUseCase,
+    private readonly listAutorUc: ListAutorUseCase
   ) {
-    super(true)
+    super()
   }
 
   protected async update(): Promise<void> {
@@ -36,12 +40,16 @@ export class AutorView extends ConsoleView {
           .catch((error: unknown) => error as Error)
 
         if (autorOrError instanceof Error) {
-          this.reportTechnicalError(autorOrError)
+          this.reportTechnicalError(
+            `Erro ao realizar o cadastro, ${autorOrError.message}!!!`
+          )
           await this.prompt('Pressione ENTER para sair...')
           return
         }
 
-        this.display('Autor cadastrado com sucesso!')
+        this.display(
+          `Autor ${JSON.stringify(autorOrError)} cadastrado com sucesso!`
+        )
         await this.prompt('Pressione ENTER para continuar...')
         break
       }
@@ -79,10 +87,41 @@ export class AutorView extends ConsoleView {
 
         break
       }
-      case '3':
-        this.display('Opção Buscar Autor selecionada.')
+      case '3': {
+        this.clear()
+        this.display('========================================')
+        this.display(`Busca de Autores:`)
+        this.display('========================================')
+        const entry = await this.prompt(
+          '\nDigite o nome, sobrenome, CPF ou ID do autor que deseja buscar: '
+        )
+        this.display('\n========================================')
+
+        const findAutorOrError = await this.listAutorUc
+          .execute(entry)
+          .catch((error: unknown) => error as Error)
+
+        if (findAutorOrError instanceof Error) {
+          this.display(`Erro ao buscar autor: ${findAutorOrError.message}`)
+          await this.prompt('Pressione ENTER para continuar...')
+
+          return
+        }
+
+        if (findAutorOrError === null || findAutorOrError.length === 0) {
+          this.display('Nenhum autor encontrado.')
+          await this.prompt('Pressione ENTER para continuar...')
+          return
+        }
+
+        findAutorOrError.map((autor) => {
+          this.display(
+            `ID: ${autor.id.toString()}\nNome Completo: ${autor.nome} ${autor.sobrenome}\nCPF: ${autor.cpf}\n========================================`
+          )
+        })
         await this.prompt('Pressione ENTER para continuar...')
         break
+      }
       case '4':
         this.display('Voltando ao Menu Principal...')
         this.exit()
