@@ -5,7 +5,7 @@ import { Usuario } from '../../model/user'
 export class UserRepository {
   constructor(private readonly pool: Pool) {}
 
-  //TODO: Implementar verificaÃ§Ã£o de login e senha para autenticaÃ§Ã£o de usuÃ¡rio
+  //TODO: Implementar verificação de login e senha para autenticação de usuário
 
   async findByLogin(login: string, password: string): Promise<Usuario | null> {
     const { rows } = await this.pool.query<Usuario>(
@@ -54,7 +54,8 @@ export class UserRepository {
 
   async findUser(entry: string): Promise<Usuario[] | null> {
     const { rows } = await this.pool.query<Usuario>(
-      `SELECT * FROM usuario 
+      `SELECT id, cpf, nome, sobrenome, email, login
+      FROM usuario 
       WHERE id::text = $1 
       OR cpf = $1 
       OR CONCAT_WS (' ', nome, sobrenome) ILIKE $1`,

@@ -9,9 +9,9 @@ import { ListAutorUseCase } from './usecase/find-autor.uc'
 import { FindUserUseCase } from './usecase/find-user.uc'
 import { ListAllAutorsUseCase } from './usecase/list-autor.uc'
 import { ListAllUsersUseCase } from './usecase/list-user.uc'
+import { AutorView } from './view/autor.view'
 import { MainView } from './view/main.view'
-import { AutorView } from './view/screens/autor.view'
-import { UsersView } from './view/screens/users.view'
+import { UsersView } from './view/user.view'
 
 async function bootstrap() {
   await initDatabase()

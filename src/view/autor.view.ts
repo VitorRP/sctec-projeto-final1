@@ -1,8 +1,8 @@
-import { ConsoleView } from '../../@common/view/console.view'
-import { CreateAutorUseCase } from '../../usecase/create-autor.uc'
-import { ListAutorUseCase } from '../../usecase/find-autor.uc'
-import { ListAllAutorsUseCase } from '../../usecase/list-autor.uc'
-import { CreateAutorDto } from '../dto/create-autor-form.dto'
+import { ConsoleView } from '../@common/view/console.view'
+import { CreateAutorUseCase } from '../usecase/create-autor.uc'
+import { ListAutorUseCase } from '../usecase/find-autor.uc'
+import { ListAllAutorsUseCase } from '../usecase/list-autor.uc'
+import { CreateAutorDto } from './dto/create-autor-form.dto'
 
 export class AutorView extends ConsoleView {
   constructor(

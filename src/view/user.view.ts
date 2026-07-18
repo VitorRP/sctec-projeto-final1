@@ -1,8 +1,8 @@
-import { ConsoleView } from '../../@common/view/console.view'
-import { CreateUserUseCase } from '../../usecase/create-user.uc'
-import { FindUserUseCase } from '../../usecase/find-user.uc'
-import { ListAllUsersUseCase } from '../../usecase/list-user.uc'
-import { CreateUserDto } from '../dto/create-user-form.dto'
+import { ConsoleView } from '../@common/view/console.view'
+import { CreateUserUseCase } from '../usecase/create-user.uc'
+import { FindUserUseCase } from '../usecase/find-user.uc'
+import { ListAllUsersUseCase } from '../usecase/list-user.uc'
+import { CreateUserDto } from './dto/create-user-form.dto'
 
 export class UsersView extends ConsoleView {
   constructor(

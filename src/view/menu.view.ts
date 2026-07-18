@@ -1,7 +1,7 @@
 import { AutorView } from './autor.view'
-import { UsersView } from './users.view'
-import { ConsoleView } from '../../@common/view/console.view'
-import { Usuario } from '../../model/user'
+import { UsersView } from './user.view'
+import { ConsoleView } from '../@common/view/console.view'
+import { Usuario } from '../model/user'
 
 export class MenuView extends ConsoleView {
   constructor(
@@ -18,8 +18,7 @@ export class MenuView extends ConsoleView {
       `   Bem-vindo, ${this.user.nome} ${this.user.sobrenome}              `
     )
     this.display('   Sistema de Gestão de Biblioteca      ')
-    this.display('========================================')
-    this.display('')
+    this.display('========================================\n')
     this.display('1 - Autores')
     this.display('2 - Livros')
     this.display('3 - Editoras')

@@ -12,7 +12,7 @@ export class CreateUserUseCase {
     )
 
     if (existingUser) {
-      throw new Error('Usuário já cadastrado')
+      throw new Error('Usuário já cadastrado!')
     }
 
     return await this.repository.create(user)
