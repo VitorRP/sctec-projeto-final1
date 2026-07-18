@@ -1,6 +1,6 @@
 import { ConsoleView } from '../@common/view/console.view'
 import { CreateAutorUseCase } from '../usecase/create-autor.uc'
-import { ListAutorUseCase } from '../usecase/find-autor.uc'
+import { FindAutorUseCase } from '../usecase/find-autor.uc'
 import { ListAllAutorsUseCase } from '../usecase/list-autor.uc'
 import { CreateAutorDto } from './dto/create-autor-form.dto'
 
@@ -8,7 +8,7 @@ export class AutorView extends ConsoleView {
   constructor(
     private readonly listAllAutorsUc: ListAllAutorsUseCase,
     private readonly createAutorUc: CreateAutorUseCase,
-    private readonly listAutorUc: ListAutorUseCase
+    private readonly findAutorUc: FindAutorUseCase
   ) {
     super()
   }
@@ -95,7 +95,7 @@ export class AutorView extends ConsoleView {
         )
         this.display('\n========================================')
 
-        const findAutorOrError = await this.listAutorUc
+        const findAutorOrError = await this.findAutorUc
           .execute(entry)
           .catch((error: unknown) => error as Error)
 

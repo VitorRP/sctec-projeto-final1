@@ -1,6 +1,7 @@
 import { AutorView } from './autor.view'
 import { CheckUserDto } from './dto/check-user-form'
 import { CreateUserDto } from './dto/create-user-form.dto'
+import { EditoraView } from './editora.view'
 import { MenuView } from './menu.view'
 import { UsersView } from './user.view'
 import { ConsoleView } from '../@common/view/console.view'
@@ -12,7 +13,8 @@ export class MainView extends ConsoleView {
     private readonly checkUserUc: CheckUserUseCase,
     private readonly createUserUc: CreateUserUseCase,
     private readonly autorView: AutorView,
-    private readonly userView: UsersView
+    private readonly userView: UsersView,
+    private readonly editoraView: EditoraView
   ) {
     super(true)
   }
@@ -81,7 +83,8 @@ export class MainView extends ConsoleView {
     const menuView = new MenuView(
       userLoginOrError,
       this.autorView,
-      this.userView
+      this.userView,
+      this.editoraView
     )
     await menuView.start()
     this.exit()

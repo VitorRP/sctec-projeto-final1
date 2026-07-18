@@ -1,15 +1,20 @@
 import 'dotenv/config'
 import { initDatabase, pool } from './@common/database/database'
 import { AutorRepository } from './infra/repositories/autor.repository'
+import { EditoraRepository } from './infra/repositories/editora.repository'
 import { UserRepository } from './infra/repositories/user.repository'
 import { CheckUserUseCase } from './usecase/check-user.uc'
 import { CreateAutorUseCase } from './usecase/create-autor.uc'
+import { CreateEditoraUseCase } from './usecase/create-editora.uc'
 import { CreateUserUseCase } from './usecase/create-user.uc'
-import { ListAutorUseCase } from './usecase/find-autor.uc'
+import { FindAutorUseCase } from './usecase/find-autor.uc'
+import { FindEditoraUseCase } from './usecase/find-editora.uc'
 import { FindUserUseCase } from './usecase/find-user.uc'
 import { ListAllAutorsUseCase } from './usecase/list-autor.uc'
+import { ListAllEditorasUseCase } from './usecase/list-editora.uc'
 import { ListAllUsersUseCase } from './usecase/list-user.uc'
 import { AutorView } from './view/autor.view'
+import { EditoraView } from './view/editora.view'
 import { MainView } from './view/main.view'
 import { UsersView } from './view/user.view'
 
@@ -20,15 +25,32 @@ async function bootstrap() {
   const createUserUc = new CreateUserUseCase(new UserRepository(pool))
 
   const createAutorUc = new CreateAutorUseCase(new AutorRepository(pool))
-  const listAllAutors = new ListAllAutorsUseCase(new AutorRepository(pool))
-  const listAutorUc = new ListAutorUseCase(new AutorRepository(pool))
+  const listAllAutorsUc = new ListAllAutorsUseCase(new AutorRepository(pool))
+  const findAutorUc = new FindAutorUseCase(new AutorRepository(pool))
 
   const findUserUc = new FindUserUseCase(new UserRepository(pool))
   const listAllUsersUc = new ListAllUsersUseCase(new UserRepository(pool))
 
-  const autorView = new AutorView(listAllAutors, createAutorUc, listAutorUc)
+  const createEditoraUc = new CreateEditoraUseCase(new EditoraRepository(pool))
+  const listAllEditorasUc = new ListAllEditorasUseCase(
+    new EditoraRepository(pool)
+  )
+  const findEditoraUc = new FindEditoraUseCase(new EditoraRepository(pool))
+
+  const autorView = new AutorView(listAllAutorsUc, createAutorUc, findAutorUc)
   const userView = new UsersView(createUserUc, listAllUsersUc, findUserUc)
-  const mainView = new MainView(checkUserUc, createUserUc, autorView, userView)
+  const editoraView = new EditoraView(
+    listAllEditorasUc,
+    createEditoraUc,
+    findEditoraUc
+  )
+  const mainView = new MainView(
+    checkUserUc,
+    createUserUc,
+    autorView,
+    userView,
+    editoraView
+  )
 
   await mainView.start()
 }

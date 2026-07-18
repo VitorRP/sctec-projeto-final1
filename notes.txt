@@ -1,5 +1,5 @@
 Ter separado a dto por funcionalidade para facilitar refatoracao e escalabilidade: Dificuldade para organização de pastas, muitas coisas só entendia quando o projeto começava a escalar
-Teria feito um menu generico para usuarios, livros e autores. Acabaram os tokens e ficou muito manual o processo
+Teria feito um menu generico para usuarios, livros, editoras e autores. Acabaram os tokens e ficou muito manual o processo
 
 Permiti fazer busca por nome ou CPF sem precisar explicitar
 

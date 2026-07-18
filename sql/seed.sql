@@ -119,16 +119,16 @@ VALUES
         '44444444444',
         'Administrador',
         'do Sistema',
-        'admin@example.com',
+        'admin@email.com',
         'admin',
         'password123'
     ),
     (
         '55555555555',
         'Maria',
-        'Bibliotecaria',
-        'maria@example.com',
-        'maria',
+        'Soares',
+        'maria.soares@email.com',
+        'maria.soares',
         'password123'
     )
 ON CONFLICT DO NOTHING;
