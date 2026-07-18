@@ -1,11 +1,13 @@
 import { AutorView } from './autor.view'
+import { UsersView } from './users.view'
 import { ConsoleView } from '../../@common/view/console.view'
 import { Usuario } from '../../model/user'
 
 export class MenuView extends ConsoleView {
   constructor(
     private readonly user: Usuario,
-    private readonly autorView: AutorView
+    private readonly autorView: AutorView,
+    private readonly userView: UsersView
   ) {
     super()
   }
@@ -42,7 +44,7 @@ export class MenuView extends ConsoleView {
         this.display('Opção Empréstimos selecionada.')
         break
       case '5':
-        this.display('Opção Usuários selecionada.')
+        await this.userView.start()
         break
       case '6':
         this.display('Opção Relatórios selecionada.')

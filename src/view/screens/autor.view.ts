@@ -1,9 +1,7 @@
 import { ConsoleView } from '../../@common/view/console.view'
-import { CreateAutorUseCase } from '../../service/create-autor.uc'
-import {
-  ListAllAutorsUseCase,
-  ListAutorUseCase
-} from '../../service/list-autor.service'
+import { CreateAutorUseCase } from '../../usecase/create-autor.uc'
+import { ListAutorUseCase } from '../../usecase/find-autor.uc'
+import { ListAllAutorsUseCase } from '../../usecase/list-autor.uc'
 import { CreateAutorDto } from '../dto/create-autor-form.dto'
 
 export class AutorView extends ConsoleView {
@@ -65,7 +63,7 @@ export class AutorView extends ConsoleView {
           .catch((error: unknown) => error as Error)
 
         if (listAutorsOrError instanceof Error) {
-          this.display('Erro ao listar autores: ' + listAutorsOrError.message)
+          this.display(`Erro ao listar autores: ${listAutorsOrError.message}!`)
           await this.prompt('Pressione ENTER para continuar...')
 
           return

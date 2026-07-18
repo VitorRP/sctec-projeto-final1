@@ -41,4 +41,30 @@ export class UserRepository {
 
     return row
   }
+
+  async listAllUsers(): Promise<Usuario[] | null> {
+    const { rows } = await this.pool.query<Usuario>(`SELECT * FROM usuario`)
+
+    if (rows.length === 0) {
+      return null
+    }
+
+    return rows
+  }
+
+  async findUser(entry: string): Promise<Usuario[] | null> {
+    const { rows } = await this.pool.query<Usuario>(
+      `SELECT * FROM usuario 
+      WHERE id::text = $1 
+      OR cpf = $1 
+      OR CONCAT_WS (' ', nome, sobrenome) ILIKE $1`,
+      [`%${entry}%`]
+    )
+
+    if (rows.length === 0) {
+      return null
+    }
+
+    return rows
+  }
 }

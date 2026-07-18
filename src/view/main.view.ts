@@ -2,15 +2,17 @@ import { CheckUserDto } from './dto/check-user-form'
 import { CreateUserDto } from './dto/create-user-form.dto'
 import { AutorView } from './screens/autor.view'
 import { MenuView } from './screens/menu.view'
+import { UsersView } from './screens/users.view'
 import { ConsoleView } from '../@common/view/console.view'
-import { CheckUserUseCase } from '../service/check-user.uc'
-import { CreateUserUseCase } from '../service/create-user.uc'
+import { CheckUserUseCase } from '../usecase/check-user.uc'
+import { CreateUserUseCase } from '../usecase/create-user.uc'
 
 export class MainView extends ConsoleView {
   constructor(
     private readonly checkUserUc: CheckUserUseCase,
     private readonly createUserUc: CreateUserUseCase,
-    private readonly autorView: AutorView
+    private readonly autorView: AutorView,
+    private readonly userView: UsersView
   ) {
     super(true)
   }
@@ -76,7 +78,11 @@ export class MainView extends ConsoleView {
       return
     }
 
-    const menuView = new MenuView(userLoginOrError, this.autorView)
+    const menuView = new MenuView(
+      userLoginOrError,
+      this.autorView,
+      this.userView
+    )
     await menuView.start()
     this.exit()
   }
