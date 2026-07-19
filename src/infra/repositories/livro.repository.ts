@@ -34,7 +34,7 @@ export class LivroRepository {
     const { rows } = await this.pool.query<Livro>(
       `SELECT * FROM livro
         WHERE titulo ILIKE $1
-        OR ano_publicacao ILIKE $1
+        OR ano_publicacao::text ILIKE $1
         OR codigo_isbn ILIKE $1
         OR id::text ILIKE $1`,
       [`%${entry}%`]
