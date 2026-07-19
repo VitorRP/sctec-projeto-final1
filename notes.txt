@@ -6,3 +6,5 @@ Permiti fazer busca por nome ou CPF sem precisar explicitar
 Tratamento de erros nao esta como deveria ser
 
 Formato que foi feito o ordenamento de livros nao eh adequado
+
+quantidade de emprestimos na tabela de livros

@@ -2,23 +2,28 @@ import 'dotenv/config'
 import { initDatabase, pool } from './@common/database/database'
 import { AutorRepository } from './infra/repositories/autor.repository'
 import { EditoraRepository } from './infra/repositories/editora.repository'
+import { EmprestimoRepository } from './infra/repositories/emprestimo.repository'
 import { LivroRepository } from './infra/repositories/livro.repository'
 import { UserRepository } from './infra/repositories/user.repository'
 import { CheckUserUseCase } from './usecase/check-user.uc'
 import { CreateAutorUseCase } from './usecase/create-autor.uc'
 import { CreateEditoraUseCase } from './usecase/create-editora.uc'
+import { CreateEmprestimoUseCase } from './usecase/create-emprestimo.uc'
 import { CreateLivroUseCase } from './usecase/create-livro.uc'
 import { CreateUserUseCase } from './usecase/create-user.uc'
+import { DevolverEmprestimoUseCase } from './usecase/devolver-emprestimo.uc'
 import { FindAutorUseCase } from './usecase/find-autor.uc'
 import { FindEditoraUseCase } from './usecase/find-editora.uc'
 import { FindLivroUseCase } from './usecase/find-livro.uc'
 import { FindUserUseCase } from './usecase/find-user.uc'
 import { ListAllAutorsUseCase } from './usecase/list-autor.uc'
 import { ListAllEditorasUseCase } from './usecase/list-editora.uc'
+import { ListEmprestimosUseCase } from './usecase/list-emprestimo.uc'
 import { ListAllLivrosUseCase } from './usecase/list-livro.uc'
 import { ListAllUsersUseCase } from './usecase/list-user.uc'
 import { AutorView } from './view/autor.view'
 import { EditoraView } from './view/editora.view'
+import { EmprestimoView } from './view/emprestimo.view'
 import { LivroView } from './view/livro.view'
 import { MainView } from './view/main.view'
 import { UsersView } from './view/user.view'
@@ -40,6 +45,16 @@ async function bootstrap() {
   const listAllLivrosUc = new ListAllLivrosUseCase(new LivroRepository(pool))
   const createLivroUc = new CreateLivroUseCase(new LivroRepository(pool))
 
+  const createEmprestimoUc = new CreateEmprestimoUseCase(
+    new EmprestimoRepository(pool)
+  )
+  const listAllEmprestimosUc = new ListEmprestimosUseCase(
+    new EmprestimoRepository(pool)
+  )
+  const devolverEmprestimoUc = new DevolverEmprestimoUseCase(
+    new EmprestimoRepository(pool)
+  )
+
   const createEditoraUc = new CreateEditoraUseCase(new EditoraRepository(pool))
   const listAllEditorasUc = new ListAllEditorasUseCase(
     new EditoraRepository(pool)
@@ -55,13 +70,20 @@ async function bootstrap() {
   )
   const livroView = new LivroView(listAllLivrosUc, createLivroUc, findLivroUc)
 
+  const emprestimoView = new EmprestimoView(
+    createEmprestimoUc,
+    listAllEmprestimosUc,
+    devolverEmprestimoUc
+  )
+
   const mainView = new MainView(
     checkUserUc,
     createUserUc,
     autorView,
     userView,
     editoraView,
-    livroView
+    livroView,
+    emprestimoView
   )
 
   await mainView.start()

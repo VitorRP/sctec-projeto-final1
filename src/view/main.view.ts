@@ -2,6 +2,7 @@ import { AutorView } from './autor.view'
 import { CheckUserDto } from './dto/check-user-form'
 import { CreateUserDto } from './dto/create-user-form.dto'
 import { EditoraView } from './editora.view'
+import { EmprestimoView } from './emprestimo.view'
 import { LivroView } from './livro.view'
 import { MenuView } from './menu.view'
 import { UsersView } from './user.view'
@@ -16,7 +17,8 @@ export class MainView extends ConsoleView {
     private readonly autorView: AutorView,
     private readonly userView: UsersView,
     private readonly editoraView: EditoraView,
-    private readonly livroView: LivroView
+    private readonly livroView: LivroView,
+    private readonly emprestimoView: EmprestimoView
   ) {
     super(true)
   }
@@ -87,7 +89,8 @@ export class MainView extends ConsoleView {
       this.autorView,
       this.userView,
       this.editoraView,
-      this.livroView
+      this.livroView,
+      this.emprestimoView
     )
     await menuView.start()
     this.exit()

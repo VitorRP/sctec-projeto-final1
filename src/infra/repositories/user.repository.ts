@@ -5,8 +5,6 @@ import { Usuario } from '../../model/user'
 export class UserRepository {
   constructor(private readonly pool: Pool) {}
 
-  //TODO: Implementar verificação de login e senha para autenticação de usuário
-
   async findByLogin(login: string, password: string): Promise<Usuario | null> {
     const { rows } = await this.pool.query<Usuario>(
       `SELECT * FROM usuario 

@@ -1,4 +1,5 @@
 import { ConsoleView } from '../@common/view/console.view'
+// import { Livro } from '../model/livro'
 import { CreateLivroUseCase } from '../usecase/create-livro.uc'
 import { FindLivroUseCase } from '../usecase/find-livro.uc'
 import { ListAllLivrosUseCase } from '../usecase/list-livro.uc'
@@ -29,7 +30,7 @@ export class LivroView extends ConsoleView {
       case '1': {
         this.clear()
         const createLivroDto = await this.promptInteractiveForm(
-          `Informe os dados do livro`,
+          `Informe os dados do livro (Formato do ano de publicação deve ser: YYYY-MM-DD)`,
           CreateLivroDto.schema(),
           CreateLivroDto
         )
@@ -56,6 +57,15 @@ export class LivroView extends ConsoleView {
       case '2': {
         this.clear()
 
+        //TODO Realizar logica de ordenamento dos livros
+        // const parameter = await this.prompt(
+        //   `Qual deseja ordernar por qual campo?\n1 - Titulo\n2 - Quantidade Total\n3 - Quantidade disponível\n`
+        // )
+
+        // const order = await this.prompt(
+        //   `Qual a ordem desejada?\n1 - Crescente\n2 - Decrescente\n`
+        // )
+
         this.display('========================================')
         this.display(`Listagem de Livros:`)
         this.display('========================================')
@@ -76,9 +86,14 @@ export class LivroView extends ConsoleView {
           return
         }
 
+        // if(parameter === '1')
+        // listLivrosOrError.sort(
+        //   (a: Livro, b: Livro) => b.quantidade_total - a.quantidade_total
+        // )
+
         listLivrosOrError.map((livro) => {
           this.display(
-            `ID: ${livro.id.toString()}\nTitulo: ${livro.titulo}\nCodigo ISBN: ${livro.codigo_isbn}\nAno de Publicação: ${livro.ano_publicacao}\nQuantidade Total: ${livro.quantidade_total.toString()}\nQuantidade empréstimos: ${livro.quantidade_emprestimos.toString()}\nQuantidade disponível: ${(livro.quantidade_total - livro.quantidade_emprestimos).toString()}`
+            `ID: ${livro.id.toString()}\nTitulo: ${livro.titulo}\nCodigo ISBN: ${livro.codigo_isbn}\nAno de Publicação: ${livro.ano_publicacao}\nQuantidade Total: ${livro.quantidade_total.toString()}\nQuantidade empréstimos: ${livro.quantidade_emprestimos.toString()}\nQuantidade disponível: ${(livro.quantidade_total - livro.quantidade_emprestimos).toString()}\n========================================`
           )
         })
 
@@ -116,7 +131,7 @@ export class LivroView extends ConsoleView {
 
         findLivroOrError.map((livro) => {
           this.display(
-            `ID: ${livro.id.toString()}\nTitulo: ${livro.titulo}\nCodigo ISBN: ${livro.codigo_isbn}\nAno de Publicação: ${livro.ano_publicacao}\nQuantidade Total: ${livro.quantidade_total.toString()}\nQuantidade empréstimos: ${livro.quantidade_emprestimos.toString()}\nQuantidade disponível: ${(livro.quantidade_total - livro.quantidade_emprestimos).toString()}`
+            `ID: ${livro.id.toString()}\nTitulo: ${livro.titulo}\nCodigo ISBN: ${livro.codigo_isbn}\nAno de Publicação: ${livro.ano_publicacao}\nQuantidade Total: ${livro.quantidade_total.toString()}\nQuantidade empréstimos: ${livro.quantidade_emprestimos.toString()}\nQuantidade disponível: ${(livro.quantidade_total - livro.quantidade_emprestimos).toString()}\n========================================`
           )
         })
         await this.prompt('Pressione ENTER para continuar...')

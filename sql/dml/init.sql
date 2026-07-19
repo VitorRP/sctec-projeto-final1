@@ -84,7 +84,7 @@ CREATE TABLE emprestimo_usuario (
     id               INTEGER      GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     id_usuario       INTEGER          NOT NULL REFERENCES usuario(id),
     id_livro         INTEGER          NOT NULL REFERENCES livro(id),
-    data_emprestimo  TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    data_emprestimo  TIMESTAMPTZ        NOT NULL DEFAULT CURRENT_TIMESTAMP,
     status           status_emprestimo   NOT NULL DEFAULT 'ativo',
-    data_devolucao   TIMESTAMP        NULL
+    data_devolucao   TIMESTAMPTZ        NULL
 );

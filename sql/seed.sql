@@ -1,9 +1,7 @@
 BEGIN;
 
--- ============================================================
--- AUTORES
--- CPFs ficticios para ambiente de desenvolvimento
--- ============================================================
+-- Dados ficticios para desenvolvimento
+
 INSERT INTO autor (nome, sobrenome, cpf)
 VALUES
     ('Machado', 'de Assis', '11111111111'),
@@ -11,10 +9,6 @@ VALUES
     ('Carlos', 'Drummond de Andrade', '33333333333')
 ON CONFLICT DO NOTHING;
 
--- ============================================================
--- EDITORAS
--- CNPJs ficticios para ambiente de desenvolvimento
--- ============================================================
 INSERT INTO editora (cnpj, razao_social, nome_fantasia)
 VALUES
     ('11111111000111', 'Editora Aurora Ltda.', 'Aurora'),
@@ -22,10 +16,6 @@ VALUES
     ('33333333000133', 'Acervo Academico Ltda.', 'Acervo')
 ON CONFLICT DO NOTHING;
 
--- ============================================================
--- LIVROS
--- ISBNs demonstrativos
--- ============================================================
 INSERT INTO livro (
     titulo,
     ano_publicacao,
@@ -34,39 +24,12 @@ INSERT INTO livro (
     quantidade_emprestimos
 )
 VALUES
-    (
-        'Dom Casmurro',
-        DATE '1899-01-01',
-        '9780000000001',
-        5,
-        1
-    ),
-    (
-        'A Hora da Estrela',
-        DATE '1977-01-01',
-        '9780000000002',
-        4,
-        0
-    ),
-    (
-        'Alguma Poesia',
-        DATE '1930-01-01',
-        '9780000000003',
-        3,
-        0
-    ),
-    (
-        'Contos Brasileiros',
-        DATE '2020-01-01',
-        '9780000000004',
-        2,
-        0
-    )
+    ('Dom Casmurro', DATE '1899-01-01', '9780000000001', 5, 0),
+    ('A Hora da Estrela', DATE '1977-01-01', '9780000000002', 4, 0),
+    ('Alguma Poesia', DATE '1930-01-01', '9780000000003', 3, 0),
+    ('Contos Brasileiros', DATE '2020-01-01', '9780000000004', 2, 0)
 ON CONFLICT DO NOTHING;
 
--- ============================================================
--- RELACIONAMENTO AUTOR <-> LIVRO
--- ============================================================
 INSERT INTO autor_livro (id_autor, id_livro)
 SELECT autor.id, livro.id
 FROM (
@@ -77,15 +40,10 @@ FROM (
         ('11111111111', '9780000000004'),
         ('22222222222', '9780000000004')
 ) AS relacionamento(cpf, isbn)
-JOIN autor
-    ON autor.cpf::text = relacionamento.cpf
-JOIN livro
-    ON livro.codigo_isbn = relacionamento.isbn
+JOIN autor ON autor.cpf::text = relacionamento.cpf
+JOIN livro ON livro.codigo_isbn = relacionamento.isbn
 ON CONFLICT DO NOTHING;
 
--- ============================================================
--- RELACIONAMENTO LIVRO <-> EDITORA
--- ============================================================
 INSERT INTO livro_editora (id_livro, id_editora)
 SELECT livro.id, editora.id
 FROM (
@@ -96,16 +54,10 @@ FROM (
         ('9780000000004', '11111111000111'),
         ('9780000000004', '33333333000133')
 ) AS relacionamento(isbn, cnpj)
-JOIN livro
-    ON livro.codigo_isbn = relacionamento.isbn
-JOIN editora
-    ON editora.cnpj::text = relacionamento.cnpj
+JOIN livro ON livro.codigo_isbn = relacionamento.isbn
+JOIN editora ON editora.cnpj::text = relacionamento.cnpj
 ON CONFLICT DO NOTHING;
 
--- ============================================================
--- USUARIOS
--- Senhas destinadas apenas ao ambiente de desenvolvimento
--- ============================================================
 INSERT INTO usuario (
     cpf,
     nome,
@@ -133,9 +85,8 @@ VALUES
     )
 ON CONFLICT DO NOTHING;
 
--- ============================================================
--- EMPRESTIMO ATIVO
--- ============================================================
+-- Emprestimo ativo em horario de Brasilia
+
 INSERT INTO emprestimo_usuario (
     id_usuario,
     id_livro,
@@ -146,24 +97,22 @@ INSERT INTO emprestimo_usuario (
 SELECT
     usuario.id,
     livro.id,
-    TIMESTAMP '2026-07-15 10:00:00',
+    TIMESTAMPTZ '2026-07-18 10:00:00-03',
     'ativo'::status_emprestimo,
     NULL
 FROM usuario
-JOIN livro
-    ON livro.codigo_isbn = '9780000000001'
-WHERE usuario.login = 'maria'
+JOIN livro ON livro.codigo_isbn = '9780000000001'
+WHERE usuario.login = 'maria.soares'
   AND NOT EXISTS (
       SELECT 1
       FROM emprestimo_usuario
       WHERE id_usuario = usuario.id
         AND id_livro = livro.id
-        AND data_emprestimo = TIMESTAMP '2026-07-15 10:00:00'
+        AND status = 'ativo'
   );
 
--- ============================================================
--- EMPRESTIMO DEVOLVIDO
--- ============================================================
+-- Emprestimo ja devolvido em horario de Brasilia
+
 INSERT INTO emprestimo_usuario (
     id_usuario,
     id_livro,
@@ -174,19 +123,28 @@ INSERT INTO emprestimo_usuario (
 SELECT
     usuario.id,
     livro.id,
-    TIMESTAMP '2026-07-01 09:00:00',
+    TIMESTAMPTZ '2026-07-01 09:00:00-03',
     'devolvido'::status_emprestimo,
-    TIMESTAMP '2026-07-10 14:30:00'
+    TIMESTAMPTZ '2026-07-10 14:30:00-03'
 FROM usuario
-JOIN livro
-    ON livro.codigo_isbn = '9780000000002'
+JOIN livro ON livro.codigo_isbn = '9780000000002'
 WHERE usuario.login = 'admin'
   AND NOT EXISTS (
       SELECT 1
       FROM emprestimo_usuario
       WHERE id_usuario = usuario.id
         AND id_livro = livro.id
-        AND data_emprestimo = TIMESTAMP '2026-07-01 09:00:00'
+        AND data_emprestimo = TIMESTAMPTZ '2026-07-01 09:00:00-03'
   );
+
+-- Sincroniza a quantidade com os emprestimos ativos
+
+UPDATE livro
+SET quantidade_emprestimos = (
+    SELECT COUNT(*)::INTEGER
+    FROM emprestimo_usuario
+    WHERE id_livro = livro.id
+      AND status = 'ativo'
+);
 
 COMMIT;

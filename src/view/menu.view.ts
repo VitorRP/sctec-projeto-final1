@@ -1,5 +1,6 @@
 import { AutorView } from './autor.view'
 import { EditoraView } from './editora.view'
+import { EmprestimoView } from './emprestimo.view'
 import { LivroView } from './livro.view'
 import { UsersView } from './user.view'
 import { ConsoleView } from '../@common/view/console.view'
@@ -11,7 +12,8 @@ export class MenuView extends ConsoleView {
     private readonly autorView: AutorView,
     private readonly userView: UsersView,
     private readonly editoraView: EditoraView,
-    private readonly livroView: LivroView
+    private readonly livroView: LivroView,
+    private readonly emprestimoView: EmprestimoView
   ) {
     super()
   }
@@ -44,7 +46,7 @@ export class MenuView extends ConsoleView {
         await this.editoraView.start()
         break
       case '4':
-        this.display('Opção Empréstimos selecionada.')
+        await this.emprestimoView.start()
         break
       case '5':
         await this.userView.start()
