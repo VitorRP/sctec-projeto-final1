@@ -4,3 +4,5 @@ Teria feito um menu generico para usuarios, livros, editoras e autores. Acabaram
 Permiti fazer busca por nome ou CPF sem precisar explicitar
 
 Tratamento de erros nao esta como deveria ser
+
+Formato que foi feito o ordenamento de livros nao eh adequado

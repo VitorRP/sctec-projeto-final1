@@ -27,6 +27,7 @@ export class AutorView extends ConsoleView {
 
     switch (option) {
       case '1': {
+        this.clear()
         const createAutorDto = await this.promptInteractiveForm(
           `Informe os dados do autor`,
           CreateAutorDto.schema(),
