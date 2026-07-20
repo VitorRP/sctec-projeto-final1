@@ -38,7 +38,8 @@ export class AutorRepository {
       AND (
       id::text = $1
       OR cpf = $1
-      OR CONCAT_WS(' ', nome, sobrenome) ILIKE $2)`,
+      OR CONCAT_WS(' ', nome, sobrenome) ILIKE $2
+    )`,
       [entry, `%${entry}%`]
     )
     return rows
