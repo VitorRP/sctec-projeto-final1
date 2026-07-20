@@ -4,6 +4,7 @@ import { AutorRepository } from './infra/repositories/autor.repository'
 import { EditoraRepository } from './infra/repositories/editora.repository'
 import { EmprestimoRepository } from './infra/repositories/emprestimo.repository'
 import { LivroRepository } from './infra/repositories/livro.repository'
+import { RelatorioRepository } from './infra/repositories/relatorio.repository'
 import { UserRepository } from './infra/repositories/user.repository'
 import { CheckUserUseCase } from './usecase/check-user.uc'
 import { CreateAutorUseCase } from './usecase/create-autor.uc'
@@ -21,11 +22,13 @@ import { ListAllEditorasUseCase } from './usecase/list-editora.uc'
 import { ListEmprestimosUseCase } from './usecase/list-emprestimo.uc'
 import { ListAllLivrosUseCase } from './usecase/list-livro.uc'
 import { ListAllUsersUseCase } from './usecase/list-user.uc'
+import { RelatorioUseCase } from './usecase/relatorio.uc'
 import { AutorView } from './view/autor.view'
 import { EditoraView } from './view/editora.view'
 import { EmprestimoView } from './view/emprestimo.view'
 import { LivroView } from './view/livro.view'
 import { MainView } from './view/main.view'
+import { RelatorioView } from './view/relatorio.view'
 import { UsersView } from './view/user.view'
 
 async function bootstrap() {
@@ -61,6 +64,10 @@ async function bootstrap() {
   )
   const findEditoraUc = new FindEditoraUseCase(new EditoraRepository(pool))
 
+  const relatorioUc = new RelatorioUseCase(new RelatorioRepository(pool))
+
+  const relatorioView = new RelatorioView(relatorioUc)
+
   const autorView = new AutorView(listAllAutorsUc, createAutorUc, findAutorUc)
   const userView = new UsersView(createUserUc, listAllUsersUc, findUserUc)
   const editoraView = new EditoraView(
@@ -83,7 +90,8 @@ async function bootstrap() {
     userView,
     editoraView,
     livroView,
-    emprestimoView
+    emprestimoView,
+    relatorioView
   )
 
   await mainView.start()

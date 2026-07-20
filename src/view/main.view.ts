@@ -5,6 +5,7 @@ import { EditoraView } from './editora.view'
 import { EmprestimoView } from './emprestimo.view'
 import { LivroView } from './livro.view'
 import { MenuView } from './menu.view'
+import { RelatorioView } from './relatorio.view'
 import { UsersView } from './user.view'
 import { ConsoleView } from '../@common/view/console.view'
 import { CheckUserUseCase } from '../usecase/check-user.uc'
@@ -18,7 +19,8 @@ export class MainView extends ConsoleView {
     private readonly userView: UsersView,
     private readonly editoraView: EditoraView,
     private readonly livroView: LivroView,
-    private readonly emprestimoView: EmprestimoView
+    private readonly emprestimoView: EmprestimoView,
+    private readonly relatorioView: RelatorioView
   ) {
     super(true)
   }
@@ -90,7 +92,8 @@ export class MainView extends ConsoleView {
       this.userView,
       this.editoraView,
       this.livroView,
-      this.emprestimoView
+      this.emprestimoView,
+      this.relatorioView
     )
     await menuView.start()
     this.exit()
