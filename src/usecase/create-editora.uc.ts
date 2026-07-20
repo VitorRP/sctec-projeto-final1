@@ -8,6 +8,10 @@ export class CreateEditoraUseCase {
   async execute(editora: CreateEditoraDto): Promise<Editora> {
     const existingEditora = await this.repository.findByCnpj(editora.cnpj)
 
+    if (existingEditora?.status === 'desativado') {
+      throw new Error('Já existe uma editora desativada com este CNPJ')
+    }
+
     if (existingEditora) {
       throw new Error('Editora já cadastrada!')
     }

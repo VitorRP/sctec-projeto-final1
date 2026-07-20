@@ -1,14 +1,20 @@
 import { ConsoleView } from '../@common/view/console.view'
 import { CreateEditoraUseCase } from '../usecase/create-editora.uc'
+import { DeleteEditoraUseCase } from '../usecase/delete-editora.uc'
 import { FindEditoraUseCase } from '../usecase/find-editora.uc'
 import { ListAllEditorasUseCase } from '../usecase/list-editora.uc'
 import { CreateEditoraDto } from './dto/create-editora-form.dto'
+import { DeleteEditoraDto } from './dto/delete-editora-form.dto'
+import { UpdateEditoraUseCase } from '../usecase/update-editora.uc'
+import { UpdateEditoraDto } from './dto/update-editora-form.dto'
 
 export class EditoraView extends ConsoleView {
   constructor(
     private readonly listAllEditorasUc: ListAllEditorasUseCase,
     private readonly createEditoraUc: CreateEditoraUseCase,
-    private readonly findEditoraUc: FindEditoraUseCase
+    private readonly findEditoraUc: FindEditoraUseCase,
+    private readonly updateEditoraUc: UpdateEditoraUseCase,
+    private readonly deleteEditoraUc: DeleteEditoraUseCase
   ) {
     super()
   }
@@ -21,7 +27,9 @@ export class EditoraView extends ConsoleView {
     this.display('1 - Cadastrar Editora')
     this.display('2 - Listar Editoras')
     this.display('3 - Buscar Editora')
-    this.display('4 - Voltar ao Menu Principal')
+    this.display('4 - Atualizar Editora')
+    this.display('5 - Desativar Editora')
+    this.display('6 - Voltar ao Menu Principal')
 
     const option = await this.prompt('\nEscolha uma opção: ')
 
@@ -127,10 +135,65 @@ export class EditoraView extends ConsoleView {
         break
       }
 
-      case '4':
-        this.display('Voltando ao Menu Principal...')
+      case '4': {
+        this.clear()
+
+        const dto = await this.promptInteractiveForm(
+          'Informe todos os dados atualizados da editora',
+          UpdateEditoraDto.schema(),
+          UpdateEditoraDto
+        )
+
+        const editoraOrError = await this.updateEditoraUc
+          .execute(dto)
+          .catch((error: unknown) => error as Error)
+
+        if (editoraOrError instanceof Error) {
+          this.display(`Erro ao atualizar editora: ${editoraOrError.message}`)
+          await this.prompt('Pressione ENTER para continuar...')
+          return
+        }
+
+        this.display(
+          `Editora ${editoraOrError.razao_social} atualizada com sucesso!`
+        )
+
+        await this.prompt('Pressione ENTER para continuar...')
+        break
+      }
+
+      case '5': {
+        this.clear()
+
+        const dto = await this.promptInteractiveForm(
+          'Informe a editora que será desativada',
+          DeleteEditoraDto.schema(),
+          DeleteEditoraDto
+        )
+
+        const editoraOrError = await this.deleteEditoraUc
+          .execute(dto.id)
+          .catch((error: unknown) => error as Error)
+
+        if (editoraOrError instanceof Error) {
+          this.display(`Erro ao desativar editora: ${editoraOrError.message}`)
+          await this.prompt('Pressione ENTER para continuar...')
+          return
+        }
+
+        this.display(
+          `Editora ${editoraOrError.razao_social} desativada com sucesso!`
+        )
+
+        await this.prompt('Pressione ENTER para continuar...')
+        break
+      }
+
+      case '6': {
         this.exit()
         break
+      }
+
       default:
         this.display('Opção inválida. Tente novamente.')
         await this.prompt('Pressione ENTER para continuar...')

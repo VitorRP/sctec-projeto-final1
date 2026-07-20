@@ -44,17 +44,124 @@ export class LivroRepository {
   }
 
   async create(
-    livro: Omit<Livro, 'id' | 'quantidade_emprestimos' | 'quantidade_total'>
+    livro: Omit<Livro, 'id' | 'quantidade_emprestimos' | 'quantidade_total'>,
+    idAutor: number,
+    idEditora: number
   ): Promise<Livro> {
-    const {
-      rows: [row]
-    } = await this.pool.query<Livro>(
-      `INSERT INTO livro (titulo, ano_publicacao, codigo_isbn)
-        values ($1, $2, $3)
-        RETURNING *`,
-      [livro.titulo, livro.ano_publicacao, livro.codigo_isbn]
+    const client = await this.pool.connect()
+
+    try {
+      await client.query('BEGIN')
+
+      const autorResult = await client.query(
+        `SELECT id
+      FROM autor
+      WHERE id = $1
+      AND status = 'ativo'
+      FOR UPDATE`,
+        [idAutor]
+      )
+
+      if (autorResult.rows.length === 0) {
+        throw new Error('Autor não encontrado ou desativado')
+      }
+
+      const editoraResult = await client.query(
+        `SELECT id
+      FROM editora
+      WHERE id = $1
+      AND status = 'ativo'
+      FOR UPDATE`,
+        [idEditora]
+      )
+
+      if (editoraResult.rows.length === 0) {
+        throw new Error('Editora não encontrada ou desativada')
+      }
+
+      const {
+        rows: [livroCriado]
+      } = await client.query<Livro>(
+        `INSERT INTO livro (
+        titulo,
+        ano_publicacao,
+        codigo_isbn
+      )
+      VALUES ($1, $2, $3)
+      RETURNING *`,
+        [livro.titulo, livro.ano_publicacao, livro.codigo_isbn]
+      )
+
+      await client.query(
+        `INSERT INTO autor_livro (
+        id_autor,
+        id_livro
+      )
+      VALUES ($1, $2)`,
+        [idAutor, livroCriado.id]
+      )
+
+      await client.query(
+        `INSERT INTO livro_editora (
+        id_livro,
+        id_editora
+      )
+      VALUES ($1, $2)`,
+        [livroCriado.id, idEditora]
+      )
+
+      await client.query('COMMIT')
+
+      return livroCriado
+    } catch (error) {
+      await client.query('ROLLBACK')
+      throw error
+    } finally {
+      client.release()
+    }
+  }
+
+  async findLivroById(id: number): Promise<Livro | null> {
+    const { rows } = await this.pool.query<Livro>(
+      `SELECT *
+    FROM livro
+    WHERE id = $1`,
+      [id]
     )
 
-    return row
+    return rows[0] ?? null
+  }
+
+  async addExemplares(id: number, quantidade: number): Promise<Livro> {
+    const { rows } = await this.pool.query<Livro>(
+      `UPDATE livro
+    SET quantidade_total = quantidade_total + $2
+    WHERE id = $1
+    RETURNING *`,
+      [id, quantidade]
+    )
+
+    if (rows.length === 0) {
+      throw new Error('Livro não encontrado')
+    }
+
+    return rows[0]
+  }
+
+  async removeExemplares(id: number, quantidade: number): Promise<Livro> {
+    const { rows } = await this.pool.query<Livro>(
+      `UPDATE livro
+    SET quantidade_total = quantidade_total - $2
+    WHERE id = $1
+    AND quantidade_total - $2 >= quantidade_emprestimos
+    RETURNING *`,
+      [id, quantidade]
+    )
+
+    if (rows.length === 0) {
+      throw new Error('Não foi possível remover os exemplares')
+    }
+
+    return rows[0]
   }
 }

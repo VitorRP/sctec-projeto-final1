@@ -1,3 +1,5 @@
+import { CadastroStatus } from './status-cadastro'
+
 export interface Usuario {
   id: number
 
@@ -12,4 +14,6 @@ export interface Usuario {
   login: string
 
   password: string
+
+  status: CadastroStatus
 }

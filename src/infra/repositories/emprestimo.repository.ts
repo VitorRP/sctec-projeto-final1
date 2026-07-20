@@ -23,12 +23,16 @@ export class EmprestimoRepository {
       await client.query('BEGIN')
 
       const userResult = await client.query<Usuario>(
-        'SELECT id FROM usuario WHERE id = $1',
+        `SELECT *
+        FROM usuario
+        WHERE id = $1
+        AND status = 'ativo'
+        FOR UPDATE`,
         [id_usuario]
       )
 
       if (userResult.rows.length === 0) {
-        throw new Error('Usuário não encontrado')
+        throw new Error('Usuário não encontrado ou desativado')
       }
 
       const livroResult = await client.query<Livro>(

@@ -1,3 +1,5 @@
+import { CadastroStatus } from './status-cadastro'
+
 export interface Editora {
   id: number
 
@@ -6,4 +8,6 @@ export interface Editora {
   razao_social: string
 
   nome_fantasia: string
+
+  status: CadastroStatus
 }

@@ -1,14 +1,20 @@
 import { ConsoleView } from '../@common/view/console.view'
 import { CreateAutorUseCase } from '../usecase/create-autor.uc'
+import { DeleteAutorUseCase } from '../usecase/delete-autor.uc'
 import { FindAutorUseCase } from '../usecase/find-autor.uc'
 import { ListAllAutorsUseCase } from '../usecase/list-autor.uc'
 import { CreateAutorDto } from './dto/create-autor-form.dto'
+import { DeleteAutorDto } from './dto/delete-autor-form.dto'
+import { UpdateAutorUseCase } from '../usecase/update-autor.uc'
+import { UpdateAutorDto } from './dto/update-autor-form.dto'
 
 export class AutorView extends ConsoleView {
   constructor(
     private readonly listAllAutorsUc: ListAllAutorsUseCase,
     private readonly createAutorUc: CreateAutorUseCase,
-    private readonly findAutorUc: FindAutorUseCase
+    private readonly findAutorUc: FindAutorUseCase,
+    private readonly updateAutorUc: UpdateAutorUseCase,
+    private readonly deleteAutorUc: DeleteAutorUseCase
   ) {
     super()
   }
@@ -21,7 +27,9 @@ export class AutorView extends ConsoleView {
     this.display('1 - Cadastrar Autor')
     this.display('2 - Listar Autores')
     this.display('3 - Buscar Autor')
-    this.display('4 - Voltar ao Menu Principal')
+    this.display('4 - Atualizar Autor')
+    this.display('5 - Desativar Autor')
+    this.display('6 - Voltar ao Menu Principal')
 
     const option = await this.prompt('\nEscolha uma opção: ')
 
@@ -121,10 +129,66 @@ export class AutorView extends ConsoleView {
         await this.prompt('Pressione ENTER para continuar...')
         break
       }
-      case '4':
-        this.display('Voltando ao Menu Principal...')
+
+      case '4': {
+        this.clear()
+
+        const dto = await this.promptInteractiveForm(
+          'Informe todos os dados atualizados do autor',
+          UpdateAutorDto.schema(),
+          UpdateAutorDto
+        )
+
+        const autorOrError = await this.updateAutorUc
+          .execute(dto)
+          .catch((error: unknown) => error as Error)
+
+        if (autorOrError instanceof Error) {
+          this.display(`Erro ao atualizar autor: ${autorOrError.message}`)
+          await this.prompt('Pressione ENTER para continuar...')
+          return
+        }
+
+        this.display(
+          `Autor ${autorOrError.nome} ${autorOrError.sobrenome} atualizado com sucesso!`
+        )
+
+        await this.prompt('Pressione ENTER para continuar...')
+        break
+      }
+
+      case '5': {
+        this.clear()
+
+        const dto = await this.promptInteractiveForm(
+          'Informe o autor que será desativado',
+          DeleteAutorDto.schema(),
+          DeleteAutorDto
+        )
+
+        const autorOrError = await this.deleteAutorUc
+          .execute(dto.id)
+          .catch((error: unknown) => error as Error)
+
+        if (autorOrError instanceof Error) {
+          this.display(`Erro ao desativar autor: ${autorOrError.message}`)
+          await this.prompt('Pressione ENTER para continuar...')
+          return
+        }
+
+        this.display(
+          `Autor ${autorOrError.nome} ${autorOrError.sobrenome} desativado com sucesso!`
+        )
+
+        await this.prompt('Pressione ENTER para continuar...')
+        break
+      }
+
+      case '6': {
         this.exit()
         break
+      }
+
       default:
         this.display('Opção inválida. Tente novamente.')
         await this.prompt('Pressione ENTER para continuar...')

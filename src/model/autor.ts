@@ -1,3 +1,5 @@
+import { CadastroStatus } from './status-cadastro'
+
 export interface Autor {
   id: number
 
@@ -6,4 +8,6 @@ export interface Autor {
   sobrenome: string
 
   cpf: string
+
+  status: CadastroStatus
 }

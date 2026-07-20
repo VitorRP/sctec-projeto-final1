@@ -1,14 +1,20 @@
 import { ConsoleView } from '../@common/view/console.view'
 import { CreateUserUseCase } from '../usecase/create-user.uc'
+import { DeleteUserUseCase } from '../usecase/delete-user.uc'
 import { FindUserUseCase } from '../usecase/find-user.uc'
 import { ListAllUsersUseCase } from '../usecase/list-user.uc'
 import { CreateUserDto } from './dto/create-user-form.dto'
+import { DeleteUserDto } from './dto/delete-user-form.dto'
+import { UpdateUserUseCase } from '../usecase/update-user.uc'
+import { UpdateUserDto } from './dto/update-user-form.dto'
 
 export class UsersView extends ConsoleView {
   constructor(
     private readonly createUserUc: CreateUserUseCase,
     private readonly listAllUsersUc: ListAllUsersUseCase,
-    private readonly findUserUc: FindUserUseCase
+    private readonly findUserUc: FindUserUseCase,
+    private readonly deleteUserUc: DeleteUserUseCase,
+    private readonly updateUserUc: UpdateUserUseCase
   ) {
     super()
   }
@@ -21,7 +27,9 @@ export class UsersView extends ConsoleView {
     this.display('1 - Cadastrar Usuário')
     this.display('2 - Listar Usuários')
     this.display('3 - Buscar Usuário')
-    this.display('4 - Voltar ao Menu Principal')
+    this.display('4 - Atualizar Usuário')
+    this.display('5 - Desativar Usuário')
+    this.display('6 - Voltar ao Menu Principal')
 
     const option = await this.prompt('\nEscolha uma opção: ')
 
@@ -125,6 +133,50 @@ export class UsersView extends ConsoleView {
       }
 
       case '4': {
+        const dto = await this.promptInteractiveForm(
+          'Informe todos os dados atualizados do usuário',
+          UpdateUserDto.schema(),
+          UpdateUserDto
+        )
+
+        const result = await this.updateUserUc
+          .execute(dto)
+          .catch((error: unknown) => error as Error)
+
+        if (result instanceof Error) {
+          this.display(`Erro: ${result.message}`)
+          await this.prompt('Pressione ENTER para continuar...')
+          return
+        }
+
+        this.display(`Usuário ${result.nome} atualizado com sucesso!`)
+        await this.prompt('Pressione ENTER para continuar...')
+        break
+      }
+
+      case '5': {
+        const dto = await this.promptInteractiveForm(
+          'Informe o usuário que será desativado',
+          DeleteUserDto.schema(),
+          DeleteUserDto
+        )
+
+        const userOrError = await this.deleteUserUc
+          .execute(dto.id)
+          .catch((error: unknown) => error as Error)
+
+        if (userOrError instanceof Error) {
+          this.display(`Erro: ${userOrError.message}`)
+          await this.prompt('Pressione ENTER para continuar...')
+          return
+        }
+
+        this.display(`Usuário ${userOrError.nome} desativado com sucesso!`)
+        await this.prompt('Pressione ENTER para continuar...')
+        break
+      }
+
+      case '6': {
         this.exit()
         break
       }

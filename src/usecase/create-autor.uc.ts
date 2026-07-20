@@ -8,6 +8,10 @@ export class CreateAutorUseCase {
   async execute(autor: CreateAutorDto): Promise<Autor> {
     const existingAutor = await this.repository.findAutorByCpf(autor.cpf)
 
+    if (existingAutor?.status === 'desativado') {
+      throw new Error('Já existe um autor desativado com este CPF')
+    }
+
     if (existingAutor) {
       throw new Error('Autor já cadastrado')
     }

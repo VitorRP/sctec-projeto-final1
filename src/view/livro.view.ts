@@ -1,15 +1,18 @@
 import { ConsoleView } from '../@common/view/console.view'
-// import { Livro } from '../model/livro'
 import { CreateLivroUseCase } from '../usecase/create-livro.uc'
 import { FindLivroUseCase } from '../usecase/find-livro.uc'
 import { ListAllLivrosUseCase } from '../usecase/list-livro.uc'
 import { CreateLivroDto } from './dto/create-livro-form.dto'
-
+import { AddExemplaresLivroUseCase } from '../usecase/add-livros.uc'
+import { RemoveExemplaresLivroUseCase } from '../usecase/remove-livros.uc'
+import { UpdateQuantidadeLivroDto } from './dto/update-quantidade-livro-form.dto'
 export class LivroView extends ConsoleView {
   constructor(
     private readonly listAllLivrosUc: ListAllLivrosUseCase,
     private readonly createLivroUc: CreateLivroUseCase,
-    private readonly findLivroUc: FindLivroUseCase
+    private readonly findLivroUc: FindLivroUseCase,
+    private readonly addLivrosUc: AddExemplaresLivroUseCase,
+    private readonly removeLivrosUc: RemoveExemplaresLivroUseCase
   ) {
     super()
   }
@@ -22,7 +25,9 @@ export class LivroView extends ConsoleView {
     this.display('1 - Cadastrar Livro')
     this.display('2 - Listar Livros')
     this.display('3 - Buscar Livro')
-    this.display('4 - Voltar ao Menu Principal')
+    this.display('4 - Adicionar Livros')
+    this.display('5 - Remover Livros')
+    this.display('6 - Voltar ao Menu Principal')
 
     const option = await this.prompt('\nEscolha uma opção: ')
 
@@ -30,7 +35,7 @@ export class LivroView extends ConsoleView {
       case '1': {
         this.clear()
         const createLivroDto = await this.promptInteractiveForm(
-          `Informe os dados do livro (Formato do ano de publicação deve ser: YYYY-MM-DD)`,
+          `Informe os dados do livro (data: YYYY-MM-DD), o ID do autor e o ID da editora: `,
           CreateLivroDto.schema(),
           CreateLivroDto
         )
@@ -57,15 +62,6 @@ export class LivroView extends ConsoleView {
       case '2': {
         this.clear()
 
-        //TODO Realizar logica de ordenamento dos livros
-        // const parameter = await this.prompt(
-        //   `Qual deseja ordernar por qual campo?\n1 - Titulo\n2 - Quantidade Total\n3 - Quantidade disponível\n`
-        // )
-
-        // const order = await this.prompt(
-        //   `Qual a ordem desejada?\n1 - Crescente\n2 - Decrescente\n`
-        // )
-
         this.display('========================================')
         this.display(`Listagem de Livros:`)
         this.display('========================================')
@@ -85,11 +81,6 @@ export class LivroView extends ConsoleView {
           await this.prompt('Pressione ENTER para continuar...')
           return
         }
-
-        // if(parameter === '1')
-        // listLivrosOrError.sort(
-        //   (a: Livro, b: Livro) => b.quantidade_total - a.quantidade_total
-        // )
 
         listLivrosOrError.map((livro) => {
           this.display(
@@ -138,10 +129,56 @@ export class LivroView extends ConsoleView {
         break
       }
 
-      case '4':
-        this.display('Voltando ao Menu Principal...')
+      case '4': {
+        const dto = await this.promptInteractiveForm(
+          'Informe o livro e a quantidade que será adicionada',
+          UpdateQuantidadeLivroDto.schema(),
+          UpdateQuantidadeLivroDto
+        )
+
+        const result = await this.addLivrosUc
+          .execute(dto)
+          .catch((error: unknown) => error as Error)
+
+        if (result instanceof Error) {
+          this.display(`Erro: ${result.message}`)
+        } else {
+          this.display(
+            `Nova quantidade total: ${result.quantidade_total.toString()}`
+          )
+        }
+
+        await this.prompt('Pressione ENTER para continuar...')
+        break
+      }
+
+      case '5': {
+        const dto = await this.promptInteractiveForm(
+          'Informe o livro e a quantidade que será removida',
+          UpdateQuantidadeLivroDto.schema(),
+          UpdateQuantidadeLivroDto
+        )
+
+        const result = await this.removeLivrosUc
+          .execute(dto)
+          .catch((error: unknown) => error as Error)
+
+        if (result instanceof Error) {
+          this.display(`Erro: ${result.message}`)
+        } else {
+          this.display(
+            `Nova quantidade total: ${result.quantidade_total.toString()}`
+          )
+        }
+
+        await this.prompt('Pressione ENTER para continuar...')
+        break
+      }
+
+      case '6':
         this.exit()
         break
+
       default:
         this.display('Opção inválida. Tente novamente.')
         await this.prompt('Pressione ENTER para continuar...')
