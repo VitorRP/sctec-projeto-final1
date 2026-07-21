@@ -6,19 +6,18 @@ export class UpdateAutorUseCase {
   constructor(private readonly repository: AutorRepository) {}
 
   async execute(autor: UpdateAutorDto): Promise<Autor> {
-    if (!Number.isInteger(autor.id) || autor.id <= 0) {
+    const id = Number(autor.id)
+
+    if (!Number.isInteger(id) || id <= 0) {
       throw new Error('ID do autor inválido')
     }
 
-    const conflict = await this.repository.findUpdateConflict(
-      autor.id,
-      autor.cpf
-    )
+    const conflict = await this.repository.findUpdateConflict(id, autor.cpf)
 
     if (conflict) {
       throw new Error('CPF já utilizado por outro autor')
     }
 
-    return this.repository.update(autor)
+    return this.repository.update(id, autor.nome, autor.sobrenome, autor.cpf)
   }
 }
