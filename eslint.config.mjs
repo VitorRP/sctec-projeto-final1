@@ -44,6 +44,14 @@ const config = defineConfig(
       ...eslintPluginImport.configs.recommended.rules,
       ...eslintPluginImport.configs.typescript.rules,
 
+      semi: ['error', 'never'],
+      'prettier/prettier': [
+        'error',
+        {
+          semi: false
+        }
+      ],
+
       '@typescript-eslint/no-extraneous-class': ['off'],
       '@typescript-eslint/interface-name-prefix': 'off',
       'import/no-absolute-path': 'error',

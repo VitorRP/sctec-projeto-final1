@@ -1,6 +1,6 @@
 import { CadastroStatus } from './status-cadastro'
 
-export interface Usuario {
+export interface Autor {
   id: number
 
   nome: string
@@ -8,12 +8,6 @@ export interface Usuario {
   sobrenome: string
 
   cpf: string
-
-  email: string
-
-  login: string
-
-  password: string
 
   status: CadastroStatus
 }
