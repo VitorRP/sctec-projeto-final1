@@ -2,7 +2,7 @@ import { ConsoleFormSchema } from '../../@common/view/console.view'
 
 export class UpdateAutorDto {
   constructor(
-    public id: number,
+    public id: string,
     public nome: string,
     public sobrenome: string,
     public cpf: string
@@ -10,7 +10,7 @@ export class UpdateAutorDto {
 
   static schema(): ConsoleFormSchema {
     return {
-      id: { type: 'number', required: true },
+      id: { type: 'string', required: true },
       nome: { type: 'string', required: true },
       sobrenome: { type: 'string', required: true },
       cpf: { type: 'string', required: true }

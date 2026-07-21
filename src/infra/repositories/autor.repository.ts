@@ -99,7 +99,12 @@ export class AutorRepository {
     return rows[0] ?? null
   }
 
-  async update(autor: Omit<Autor, 'status'>): Promise<Autor> {
+  async update(
+    id: number,
+    nome: string,
+    sobrenome: string,
+    cpf: string
+  ): Promise<Autor> {
     const { rows } = await this.pool.query<Autor>(
       `UPDATE autor
     SET nome = $2,
@@ -108,7 +113,7 @@ export class AutorRepository {
     WHERE id = $1
     AND status = 'ativo'
     RETURNING *`,
-      [autor.id, autor.nome, autor.sobrenome, autor.cpf]
+      [id, nome, sobrenome, cpf]
     )
 
     if (rows.length === 0) {
